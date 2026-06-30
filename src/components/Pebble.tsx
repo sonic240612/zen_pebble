@@ -70,6 +70,6 @@ export function Pebble() {
   });
 
   return (
-    <mesh ref={meshRef} geometry={geometry} material={material} />
+    <mesh ref={meshRef} geometry={geometry} material={material} position={[0, -0.25, 0]} />
   );
 }

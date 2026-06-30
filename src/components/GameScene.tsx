@@ -24,14 +24,14 @@ function SceneLighting() {
     const nextStage = stageIdx < STAGES.length - 1 ? STAGES[stageIdx + 1] : STAGES[0];
     const progress = getStageProgress(elapsed);
 
-    const ambIntensity = currentStage.ambientIntensity + (nextStage.ambientIntensity - currentStage.ambientIntensity) * progress;
-    const sunIntensity = currentStage.sunIntensity + (nextStage.sunIntensity - currentStage.sunIntensity) * progress;
+    const ambTarget = (currentStage.ambientIntensity + (nextStage.ambientIntensity - currentStage.ambientIntensity) * progress) * 0.6;
+    const sunTarget = (currentStage.sunIntensity + (nextStage.sunIntensity - currentStage.sunIntensity) * progress) * 0.55;
 
     if (ambientRef.current) {
-      (ambientRef.current as any).intensity += (ambIntensity - (ambientRef.current as any).intensity) * 0.05;
+      (ambientRef.current as any).intensity += (ambTarget - (ambientRef.current as any).intensity) * 0.03;
     }
     if (sunRef.current) {
-      sunRef.current.intensity += (sunIntensity - sunRef.current.intensity) * 0.05;
+      sunRef.current.intensity += (sunTarget - sunRef.current.intensity) * 0.03;
     }
 
     const weather = state.envSeed.weather;
