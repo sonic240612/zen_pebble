@@ -2,6 +2,7 @@ node_modules
 dist
 .DS_Store
 *.local
+.env
 the_zen_pebble.md
 the_zen_pebble_v2.md
 .vercel

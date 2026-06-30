@@ -122,7 +122,7 @@ export function FailOverlay() {
               <div className="ranking-body">
                 {rankings.map((r, i) => (
                   <div
-                    key={r.timestamp}
+                    key={r.id}
                     className={`ranking-row ${r.elapsed === elapsed && r.stage === stageName && registered ? 'my-rank' : ''}`}
                   >
                     <span className="rank-num">{i + 1}</span>

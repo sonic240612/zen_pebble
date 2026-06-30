@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS rankings (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(12) NOT NULL,
+  elapsed BIGINT NOT NULL,
+  stage VARCHAR(20) NOT NULL DEFAULT '',
+  cycle INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_rankings_elapsed ON rankings (elapsed DESC);
