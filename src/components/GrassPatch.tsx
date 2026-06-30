@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
-import { DoubleSide, BufferGeometry, Float32BufferAttribute } from 'three';
+import { useRef, useMemo, useEffect } from 'react';
+import { DoubleSide, BufferGeometry, Float32BufferAttribute, InstancedMesh, Object3D, MeshStandardMaterial } from 'three';
+import { useGameStore } from '../stores/gameStore';
 
 const bladeGeometry = new BufferGeometry();
 const vertices = new Float32Array([
@@ -20,7 +21,7 @@ const SEASON_COLORS: Record<string, string> = {
 
 export function GrassPatch({
   season = 'spring',
-  count = 50,
+  count = 300,
   minRadius = 0.35,
   maxRadius = 1.0,
   centerX = 0,
@@ -33,6 +34,9 @@ export function GrassPatch({
   centerX?: number;
   centerZ?: number;
 }) {
+  const ref = useRef<InstancedMesh>(null);
+  const dummy = useMemo(() => new Object3D(), []);
+
   const blades = useMemo(() => {
     const result: { x: number; z: number; rotY: number; tiltX: number; tiltZ: number; height: number }[] = [];
     for (let i = 0; i < count; i++) {
@@ -50,15 +54,25 @@ export function GrassPatch({
     return result;
   }, [count, minRadius, maxRadius, centerX, centerZ]);
 
+  useEffect(() => {
+    if (!ref.current) return;
+    const mesh = ref.current;
+    for (let i = 0; i < blades.length; i++) {
+      const b = blades[i];
+      dummy.position.set(b.x, 0, b.z);
+      dummy.rotation.set(b.tiltX, b.rotY, b.tiltZ);
+      dummy.scale.set(1, b.height, 1);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+  }, [blades, dummy]);
+
   const color = SEASON_COLORS[season] ?? SEASON_COLORS.spring;
 
   return (
-    <>
-      {blades.map((b, i) => (
-        <mesh key={i} geometry={bladeGeometry} position={[b.x, 0, b.z]} rotation={[b.tiltX, b.rotY, b.tiltZ]} scale={[1, b.height, 1]}>
-          <meshStandardMaterial color={color} roughness={0.85} metalness={0} side={DoubleSide} />
-        </mesh>
-      ))}
-    </>
+    <instancedMesh ref={ref} args={[bladeGeometry, undefined, count]}>
+      <meshStandardMaterial color={color} roughness={0.85} metalness={0} side={DoubleSide} />
+    </instancedMesh>
   );
 }
