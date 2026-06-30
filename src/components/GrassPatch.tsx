@@ -1,4 +1,5 @@
 import { useRef, useMemo, useEffect } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { DoubleSide, BufferGeometry, Float32BufferAttribute, InstancedMesh, Object3D, MeshStandardMaterial } from 'three';
 import { useGameStore } from '../stores/gameStore';
 
@@ -19,6 +20,8 @@ const SEASON_COLORS: Record<string, string> = {
   winter: '#8a9a8a',
 };
 
+const GROW_DURATION = 30 * 60 * 1000;
+
 export function GrassPatch({
   season = 'spring',
   count = 300,
@@ -36,6 +39,7 @@ export function GrassPatch({
 }) {
   const ref = useRef<InstancedMesh>(null);
   const dummy = useMemo(() => new Object3D(), []);
+  const lastVisibleCount = useRef(0);
 
   const blades = useMemo(() => {
     const result: { x: number; z: number; rotY: number; tiltX: number; tiltZ: number; height: number }[] = [];
@@ -66,7 +70,22 @@ export function GrassPatch({
       mesh.setMatrixAt(i, dummy.matrix);
     }
     mesh.instanceMatrix.needsUpdate = true;
+    mesh.count = 0;
+    lastVisibleCount.current = 0;
   }, [blades, dummy]);
+
+  useFrame(() => {
+    if (!ref.current) return;
+    const state = useGameStore.getState();
+    if (state.phase !== 'playing') return;
+    const progress = Math.min(1, state.elapsed / GROW_DURATION);
+    const visibleCount = Math.floor(progress * count);
+
+    if (visibleCount !== lastVisibleCount.current) {
+      ref.current.count = visibleCount;
+      lastVisibleCount.current = visibleCount;
+    }
+  });
 
   const color = SEASON_COLORS[season] ?? SEASON_COLORS.spring;
 
