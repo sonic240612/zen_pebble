@@ -6,12 +6,21 @@ export function Landscape() {
 
   return (
     <group position={[0, -0.5, 0]}>
-      <GrassPatch season={season} count={360} minRadius={0.35} maxRadius={0.6} centerX={0} centerZ={0} />
-      <GrassPatch season={season} count={300} minRadius={0.5} maxRadius={0.9} centerX={0.3} centerZ={-0.2} />
-      <GrassPatch season={season} count={300} minRadius={0.5} maxRadius={0.9} centerX={-0.25} centerZ={0.3} />
-      <GrassPatch season={season} count={240} minRadius={0.4} maxRadius={0.8} centerX={0.2} centerZ={0.4} />
-      <GrassPatch season={season} count={240} minRadius={0.4} maxRadius={0.8} centerX={-0.3} centerZ={-0.3} />
-      <GrassPatch season={season} count={360} minRadius={0.7} maxRadius={1.2} centerX={0} centerZ={0} />
+      {/* 중심 — 돌 주변 집중 */}
+      <GrassPatch season={season} count={300} minRadius={0.3} maxRadius={1.0} centerX={0} centerZ={0} />
+      {/* 8방향으로 퍼뜨리기 */}
+      <GrassPatch season={season} count={200} minRadius={0.3} maxRadius={1.2} centerX={1.2} centerZ={0} />
+      <GrassPatch season={season} count={200} minRadius={0.3} maxRadius={1.2} centerX={-1.2} centerZ={0} />
+      <GrassPatch season={season} count={200} minRadius={0.3} maxRadius={1.2} centerX={0} centerZ={1.2} />
+      <GrassPatch season={season} count={200} minRadius={0.3} maxRadius={1.2} centerX={0} centerZ={-1.2} />
+      {/* 대각선 방향 */}
+      <GrassPatch season={season} count={150} minRadius={0.3} maxRadius={1.0} centerX={1.0} centerZ={1.0} />
+      <GrassPatch season={season} count={150} minRadius={0.3} maxRadius={1.0} centerX={-1.0} centerZ={1.0} />
+      <GrassPatch season={season} count={150} minRadius={0.3} maxRadius={1.0} centerX={1.0} centerZ={-1.0} />
+      <GrassPatch season={season} count={150} minRadius={0.3} maxRadius={1.0} centerX={-1.0} centerZ={-1.0} />
+      {/* 먼 거리 채움 */}
+      <GrassPatch season={season} count={100} minRadius={0.5} maxRadius={1.5} centerX={2.0} centerZ={0.5} />
+      <GrassPatch season={season} count={100} minRadius={0.5} maxRadius={1.5} centerX={-2.0} centerZ={-0.5} />
     </group>
   );
 }
