@@ -1,24 +1,5 @@
 import { CanvasTexture, RepeatWrapping } from 'three';
 
-function noise2D(x: number, y: number): number {
-  const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
-  return n - Math.floor(n);
-}
-
-function fbm(x: number, y: number, octaves: number): number {
-  let value = 0;
-  let amplitude = 1;
-  let frequency = 1;
-  let maxVal = 0;
-  for (let i = 0; i < octaves; i++) {
-    value += amplitude * noise2D(x * frequency, y * frequency);
-    maxVal += amplitude;
-    amplitude *= 0.5;
-    frequency *= 2.0;
-  }
-  return value / maxVal;
-}
-
 export function createDirtTexture(size = 512): CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = size;
@@ -27,28 +8,52 @@ export function createDirtTexture(size = 512): CanvasTexture {
   const imageData = ctx.createImageData(size, size);
   const data = imageData.data;
 
+  // Base soil color
+  const baseR = 120, baseG = 90, baseB = 60;
+
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const i = (y * size + x) * 4;
-      const nx = x / size;
-      const ny = y / size;
+      
+      // 1. Base color with slight variation
+      const noise = (Math.random() - 0.5) * 30;
+      let r = baseR + noise;
+      let g = baseG + noise;
+      let b = baseB + noise;
 
-      const noise = fbm(nx * 4, ny * 4, 4);
-      const coarse = fbm(nx * 2 + 10, ny * 2 + 10, 3);
-      const speckle = fbm(nx * 16, ny * 16, 2);
+      // 2. "Grain" - add high frequency noise for a gritty feel
+      const grit = (Math.random() - 0.5) * 60;
+      r += grit;
+      g += grit;
+      b += grit;
 
-      const r = Math.round(Math.max(0, Math.min(255, 140 + (noise - 0.5) * 50 + (coarse - 0.5) * 30 + (speckle - 0.5) * 20)));
-      const g = Math.round(Math.max(0, Math.min(255, 120 + (noise - 0.5) * 40 + (coarse - 0.5) * 25 + (speckle - 0.5) * 15)));
-      const b = Math.round(Math.max(0, Math.min(255, 85 + (noise - 0.5) * 30 + (coarse - 0.5) * 20 + (speckle - 0.5) * 10)));
-
-      data[i] = r;
-      data[i + 1] = g;
-      data[i + 2] = b;
+      // 3. "Clumps" - use a few random circles to simulate soil clumps
+      // We can simulate this by adding larger-scale random spots
+      // In a real loop, this is slow, but for 512x512 it's okay.
+      // To make it look like the image, we need these clumps.
+      
+      data[i] = Math.max(0, Math.min(255, r));
+      data[i + 1] = Math.max(0, Math.min(255, g));
+      data[i + 2] = Math.max(0, Math.min(255, b));
       data[i + 3] = 255;
     }
   }
 
   ctx.putImageData(imageData, 0, 0);
+
+  // Add some "organic" clumps over the top
+  for (let i = 0; i < 1000; i++) {
+    const cx = Math.random() * size;
+    const cy = Math.random() * size;
+    const radius = Math.random() * 3 + 1;
+    const alpha = Math.random() * 0.3;
+    const shade = Math.random() > 0.5 ? 'rgba(60, 40, 20, ' + alpha + ')' : 'rgba(160, 140, 110, ' + alpha + ')';
+    
+    ctx.fillStyle = shade;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
   const texture = new CanvasTexture(canvas);
   texture.wrapS = RepeatWrapping;

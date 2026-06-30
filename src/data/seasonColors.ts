@@ -52,15 +52,15 @@ export function applySeasonTint(baseColor: string, season: SeasonType, amount = 
 }
 
 const DIRT_COLORS: Record<SeasonType, [number, number, number]> = {
-  spring: [160, 135, 95],
-  summer: [175, 150, 110],
-  autumn: [180, 145, 95],
-  winter: [165, 160, 140],
+  spring: [180, 155, 115],
+  summer: [200, 170, 130],
+  autumn: [200, 165, 115],
+  winter: [180, 180, 160],
 };
 
 export function getDirtColor(season: SeasonType, brightness: number): string {
   const [r, g, b] = DIRT_COLORS[season];
-  const factor = Math.max(0.45, Math.min(1, brightness * 1.2));
+  const factor = Math.max(0.6, Math.min(1, brightness * 1.4));
   const rr = Math.round(r * factor);
   const gg = Math.round(g * factor);
   const bb = Math.round(b * factor);
