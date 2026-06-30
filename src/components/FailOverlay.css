@@ -254,24 +254,6 @@
   font-style: italic;
 }
 
-.clear-rankings-btn {
-  background: transparent;
-  color: rgba(255, 100, 100, 0.35);
-  border: none;
-  font-size: 0.6rem;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  font-family: inherit;
-  padding: 0.5rem;
-  width: 100%;
-  transition: color 0.3s ease;
-  margin-top: 0.5rem;
-}
-
-.clear-rankings-btn:hover {
-  color: rgba(255, 100, 100, 0.6);
-}
-
 @keyframes slideUp {
   from { transform: translateY(30px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }

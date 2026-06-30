@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { formatDuration } from '../utils/time';
 import { STAGES } from '../data/stages';
-import { getRankings, saveRanking, clearRankings } from '../utils/ranking';
+import { getRankings, saveRanking } from '../utils/ranking';
 import type { RankingEntry } from '../utils/ranking';
 import './FailOverlay.css';
 
@@ -44,11 +44,6 @@ export function FailOverlay() {
     setRegistered(true);
     setName('');
     await loadRankings();
-  }
-
-  async function handleClear() {
-    await clearRankings();
-    setRankings([]);
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -137,9 +132,6 @@ export function FailOverlay() {
                   </div>
                 ))}
               </div>
-              <button className="clear-rankings-btn" onClick={handleClear}>
-                랭킹 초기화
-              </button>
             </div>
           ) : (
             <p className="ranking-empty">아직 랭킹이 없습니다</p>
