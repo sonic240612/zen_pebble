@@ -28,6 +28,14 @@ export function HUD() {
     }
   }, [stage]);
 
+  const [clock, setClock] = useState('');
+  useEffect(() => {
+    const update = () => setClock(new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const timeToNext = nextStage
     ? formatDuration(nextStage.threshold - (elapsed % CYCLE_DURATION))
     : null;
@@ -39,7 +47,9 @@ export function HUD() {
   return (
     <div className="hud">
       <div className="hud-timer">
-        {formatDurationShort(elapsed)}
+        <span className="hud-clock">{clock}</span>
+        <span className="hud-timer-sep">|</span>
+        <span>{formatDurationShort(elapsed)}</span>
       </div>
       <div className="hud-info">
         <span className={`hud-stage ${transitioning ? 'hud-stage-transition' : ''}`}>
