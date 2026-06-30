@@ -20,7 +20,7 @@ const SEASON_COLORS: Record<string, string> = {
   winter: '#8a9a8a',
 };
 
-const GROW_DURATION = 30 * 60 * 1000;
+const GROW_DURATION = 8 * 60 * 1000;
 
 export function GrassPatch({
   season = 'spring',

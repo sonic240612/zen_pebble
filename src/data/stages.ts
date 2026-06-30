@@ -16,7 +16,7 @@ export const STAGES: StageDef[] = [
     id: 2,
     name: '아침',
     nameEn: 'Morning',
-    threshold: 5 * 60 * 1000,
+    threshold: 3 * 60 * 1000,
     skyTop: '#87ceeb',
     skyBottom: '#f5deb3',
     fogColor: '#f0e6d3',
@@ -27,7 +27,7 @@ export const STAGES: StageDef[] = [
     id: 3,
     name: '낮',
     nameEn: 'Day',
-    threshold: 30 * 60 * 1000,
+    threshold: 8 * 60 * 1000,
     skyTop: '#4a90d9',
     skyBottom: '#87ceeb',
     fogColor: '#e8f0f8',
@@ -38,7 +38,7 @@ export const STAGES: StageDef[] = [
     id: 4,
     name: '오후',
     nameEn: 'Afternoon',
-    threshold: 2 * 60 * 60 * 1000,
+    threshold: 15 * 60 * 1000,
     skyTop: '#f39c12',
     skyBottom: '#f1c40f',
     fogColor: '#fdebd0',
@@ -49,7 +49,7 @@ export const STAGES: StageDef[] = [
     id: 5,
     name: '황혼',
     nameEn: 'Dusk',
-    threshold: 6 * 60 * 60 * 1000,
+    threshold: 22 * 60 * 1000,
     skyTop: '#e74c3c',
     skyBottom: '#8e44ad',
     fogColor: '#e8daef',
@@ -60,7 +60,7 @@ export const STAGES: StageDef[] = [
     id: 6,
     name: '밤',
     nameEn: 'Night',
-    threshold: 12 * 60 * 60 * 1000,
+    threshold: 30 * 60 * 1000,
     skyTop: '#0a0a2e',
     skyBottom: '#1a1a3e',
     fogColor: '#1a1a2e',
@@ -71,7 +71,7 @@ export const STAGES: StageDef[] = [
     id: 7,
     name: '깊은 밤',
     nameEn: 'Deep Night',
-    threshold: 24 * 60 * 60 * 1000,
+    threshold: 40 * 60 * 1000,
     skyTop: '#050510',
     skyBottom: '#0d0d2b',
     fogColor: '#0a0a1e',
@@ -82,7 +82,7 @@ export const STAGES: StageDef[] = [
     id: 8,
     name: '새벽 복귀',
     nameEn: 'Dawn Return',
-    threshold: 48 * 60 * 60 * 1000,
+    threshold: 60 * 60 * 1000,
     skyTop: '#1a1a3e',
     skyBottom: '#5d6d7e',
     fogColor: '#2c3e50',
@@ -91,7 +91,7 @@ export const STAGES: StageDef[] = [
   },
 ];
 
-export const CYCLE_DURATION = 48 * 60 * 60 * 1000;
+export const CYCLE_DURATION = 60 * 60 * 1000;
 
 export function getStage(elapsed: number): { stage: StageDef; cycle: number } {
   const cycle = Math.floor(elapsed / CYCLE_DURATION);

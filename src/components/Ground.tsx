@@ -31,7 +31,7 @@ export function Ground() {
     const dirtColor = getDirtColor(season, currentStage.ambientIntensity);
 
     (meshRef.current.material as MeshStandardMaterial)
-      .color.lerp(new Color(dirtColor), 0.03);
+      .color.lerp(new Color(dirtColor), 0.08);
   });
 
   return (

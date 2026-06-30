@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { STAGES, getStageProgress } from '../data/stages';
+import { STAGES, getStageProgress, CYCLE_DURATION } from '../data/stages';
 import { formatDurationShort, formatDuration } from '../utils/time';
 import { LANDSCAPES, SEASONS, WEATHERS } from '../data/variations';
 import './HUD.css';
@@ -29,7 +29,7 @@ export function HUD() {
   }, [stage]);
 
   const timeToNext = nextStage
-    ? formatDuration(nextStage.threshold - (elapsed % (48 * 60 * 60 * 1000)))
+    ? formatDuration(nextStage.threshold - (elapsed % CYCLE_DURATION))
     : null;
 
   const landscapeLabel = LANDSCAPES[envSeed.landscape]?.desc ?? envSeed.landscape;

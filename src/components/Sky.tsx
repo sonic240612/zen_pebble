@@ -57,8 +57,8 @@ export function Sky() {
     const seasonTop = applySeasonTint(currentStage.skyTop, season, 0.1);
     const seasonBottom = applySeasonTint(currentStage.skyBottom, season, 0.08);
 
-    ref.current.uniforms.topColor.value.lerp(new Color(seasonTop), 0.05);
-    ref.current.uniforms.bottomColor.value.lerp(new Color(seasonBottom), 0.05);
+    ref.current.uniforms.topColor.value.lerp(new Color(seasonTop), 0.12);
+    ref.current.uniforms.bottomColor.value.lerp(new Color(seasonBottom), 0.12);
   });
 
   return (

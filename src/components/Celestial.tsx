@@ -6,7 +6,7 @@ import {
 } from 'three';
 import { useGameStore } from '../stores/gameStore';
 
-const CYCLE = 48 * 60 * 60 * 1000;
+const CYCLE = 60 * 60 * 1000;
 
 function SunMoon() {
   const sunRef = useRef<Mesh>(null);
