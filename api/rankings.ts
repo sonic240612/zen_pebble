@@ -65,5 +65,15 @@ export default async function handler(
     return;
   }
 
+  if (req.method === 'DELETE') {
+    try {
+      await sql`DELETE FROM rankings`;
+      res.status(200).json({ cleared: true });
+    } catch (e) {
+      res.status(500).json({ error: String(e) });
+    }
+    return;
+  }
+
   res.status(405).json({ error: 'method not allowed' });
 }
