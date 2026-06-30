@@ -4,3 +4,4 @@ dist
 *.local
 the_zen_pebble.md
 the_zen_pebble_v2.md
+.vercel

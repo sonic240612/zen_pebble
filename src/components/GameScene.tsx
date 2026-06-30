@@ -26,7 +26,7 @@ export function GameScene() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
       <Canvas
-        camera={{ position: [0, 0.3, 2.2], fov: 45, near: 0.1, far: 200 }}
+        camera={{ position: [0, 0, 2.0], fov: 45, near: 0.1, far: 200 }}
         dpr={[1, Math.min(window.devicePixelRatio, 2)]}
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {

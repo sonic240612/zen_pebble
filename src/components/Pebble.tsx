@@ -1,24 +1,32 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { IcosahedronGeometry, MeshStandardMaterial, Color, type Mesh } from 'three';
+import { SphereGeometry, MeshStandardMaterial, Color, type Mesh } from 'three';
 import { useGameStore } from '../stores/gameStore';
 
 export function Pebble() {
   const meshRef = useRef<Mesh>(null);
   const phase = useGameStore((s) => s.phase);
-  const elapsed = useGameStore((s) => s.elapsed);
 
   const geometry = useMemo(() => {
-    const geo = new IcosahedronGeometry(0.35, 3);
+    const geo = new SphereGeometry(0.28, 64, 48);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
       const z = pos.getZ(i);
-      const scale = 1 + (Math.sin(x * 3.7 + y * 5.1 + z * 2.3) * 0.15)
-                       + (Math.cos(y * 4.2 + z * 3.8 + x * 1.9) * 0.08);
-      pos.setXYZ(i, x * scale, y * scale, z * scale);
+      const n = Math.sqrt(x * x + y * y + z * z);
+      const nx = x / n, ny = y / n, nz = z / n;
+
+      const noise = Math.sin(nx * 2.1 + ny * 1.3 + nz * 2.5) * 0.08
+                  + Math.cos(nx * 3.7 - nz * 4.1) * 0.05
+                  + Math.sin(ny * 2.8 + nz * 1.9) * 0.06;
+
+      const bottomFlatness = 1 - Math.pow(Math.max(0, -ny), 2) * 0.2;
+      const topPeak = 1 + Math.pow(Math.max(0, ny), 3) * 0.1;
+
+      const r = (1 + noise) * bottomFlatness * topPeak;
+      pos.setXYZ(i, x * r * 1.05, y * r * 0.85, z * r * 0.98);
     }
 
     geo.computeVertexNormals();
@@ -27,10 +35,10 @@ export function Pebble() {
 
   const material = useMemo(() => {
     return new MeshStandardMaterial({
-      color: new Color('#8a8a8a'),
-      roughness: 0.85,
-      metalness: 0.05,
-      flatShading: true,
+      color: new Color('#888888'),
+      roughness: 0.7,
+      metalness: 0.02,
+      flatShading: false,
     });
   }, []);
 
