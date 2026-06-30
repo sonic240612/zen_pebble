@@ -15,14 +15,14 @@ const LAYERS: MountainLayer[] = [
 
 function createMountainGeometry(peaks: number): ShapeGeometry {
   const shape = new Shape();
-  const startX = -5;
-  shape.moveTo(startX, -1);
+  const halfW = 8;
+  shape.moveTo(-halfW, -1);
   for (let i = 0; i <= peaks; i++) {
-    const x = startX + (10 / peaks) * i;
+    const x = -halfW + (halfW * 2 / peaks) * i;
     const y = 0.15 + Math.random() * 0.55;
     shape.lineTo(x, y);
   }
-  shape.lineTo(5, -1);
+  shape.lineTo(halfW, -1);
   shape.closePath();
   return new ShapeGeometry(shape);
 }
