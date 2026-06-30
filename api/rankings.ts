@@ -12,7 +12,13 @@ export default async function handler(
         ORDER BY elapsed DESC
         LIMIT 20
       `;
-      res.status(200).json(rows);
+      const mapped = rows.map((r: Record<string, unknown>) => ({
+        ...r,
+        elapsed: Number(r.elapsed),
+        cycle: Number(r.cycle),
+        id: Number(r.id),
+      }));
+      res.status(200).json(mapped);
     } catch {
       res.status(200).json([]);
     }
