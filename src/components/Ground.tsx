@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { PlaneGeometry, MeshStandardMaterial, Color, type Mesh } from 'three';
 import { useGameStore } from '../stores/gameStore';
 import { STAGES } from '../data/stages';
+import { applySeasonTint } from '../data/seasonColors';
 
 export function Ground() {
   const meshRef = useRef<Mesh>(null);
@@ -11,11 +12,15 @@ export function Ground() {
 
   useFrame(() => {
     if (!meshRef.current) return;
-    const stage = useGameStore.getState().stage;
+    const state = useGameStore.getState();
+    const stage = state.stage;
+    const season = state.envSeed.season;
     const currentStage = STAGES.find((s) => s.id === stage) ?? STAGES[1];
 
+    const seasonGround = applySeasonTint(currentStage.fogColor, season, 0.2);
+
     (meshRef.current.material as MeshStandardMaterial)
-      .color.lerp(new Color(currentStage.fogColor).multiplyScalar(0.4), 0.01);
+      .color.lerp(new Color(seasonGround).multiplyScalar(0.4), 0.03);
   });
 
   return (

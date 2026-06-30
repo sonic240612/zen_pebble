@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { SphereGeometry, ShaderMaterial, Color, BackSide } from 'three';
 import { useGameStore } from '../stores/gameStore';
 import { STAGES, getStage, lerpColor } from '../data/stages';
+import { applySeasonTint } from '../data/seasonColors';
 
 const vertexShader = `
   varying vec3 vWorldPosition;
@@ -48,11 +49,16 @@ export function Sky() {
 
   useFrame(() => {
     if (!ref.current) return;
-    const stageId = useGameStore.getState().stage;
+    const state = useGameStore.getState();
+    const stageId = state.stage;
+    const season = state.envSeed.season;
     const currentStage = STAGES.find((s) => s.id === stageId) ?? STAGES[0];
 
-    ref.current.uniforms.topColor.value.lerp(new Color(currentStage.skyTop), 0.02);
-    ref.current.uniforms.bottomColor.value.lerp(new Color(currentStage.skyBottom), 0.02);
+    const seasonTop = applySeasonTint(currentStage.skyTop, season, 0.1);
+    const seasonBottom = applySeasonTint(currentStage.skyBottom, season, 0.08);
+
+    ref.current.uniforms.topColor.value.lerp(new Color(seasonTop), 0.05);
+    ref.current.uniforms.bottomColor.value.lerp(new Color(seasonBottom), 0.05);
   });
 
   return (

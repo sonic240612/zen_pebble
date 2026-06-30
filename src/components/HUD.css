@@ -28,11 +28,23 @@
 }
 
 .hud-stage {
-  font-size: 0.75rem;
-  font-weight: 400;
+  font-size: 0.85rem;
+  font-weight: 500;
   letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: color 0.3s ease;
+}
+
+.hud-stage-transition {
+  color: rgba(255, 220, 120, 1);
+  animation: stagePulse 0.6s ease-in-out;
+}
+
+@keyframes stagePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
 .hud-cycle {
@@ -43,12 +55,20 @@
 
 .hud-environment {
   font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.45);
   letter-spacing: 0.08em;
-  text-transform: capitalize;
   display: flex;
   align-items: center;
   gap: 0.3rem;
+}
+
+.env-item {
+  text-transform: capitalize;
+}
+
+.weather-icon {
+  font-size: 0.7rem;
+  line-height: 1;
 }
 
 .dot {
@@ -56,8 +76,12 @@
 }
 
 .hud-progress {
-  width: 120px;
+  width: 140px;
   margin-top: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
 }
 
 .progress-bar {
@@ -73,4 +97,17 @@
   background: rgba(255, 255, 255, 0.5);
   border-radius: 1px;
   transition: width 0.3s ease;
+}
+
+.hud-next-stage {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.time-to-next {
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.5);
 }
