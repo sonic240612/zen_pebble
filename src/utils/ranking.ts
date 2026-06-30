@@ -48,13 +48,38 @@ export async function getRankings(): Promise<RankingEntry[]> {
   });
 }
 
+const MAX_RANKINGS = 20;
+
 export async function saveRanking(entry: Omit<RankingEntry, 'timestamp'>): Promise<void> {
   const db = await openDB();
+
+  const all = await getRankings();
+  if (all.length >= MAX_RANKINGS && entry.elapsed <= all[all.length - 1].elapsed) {
+    db.close();
+    return;
+  }
+
+  const tx = db.transaction(STORE_NAME, 'readwrite');
+  const store = tx.objectStore(STORE_NAME);
+  store.add({ ...entry, timestamp: Date.now() });
+
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-    store.add({ ...entry, timestamp: Date.now() });
-    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.oncomplete = async () => {
+      const updated = await getRankings();
+      if (updated.length > MAX_RANKINGS) {
+        const toRemove = updated.slice(MAX_RANKINGS);
+        const delTx = db.transaction(STORE_NAME, 'readwrite');
+        const delStore = delTx.objectStore(STORE_NAME);
+        for (const r of toRemove) {
+          delStore.delete(r.timestamp);
+        }
+        delTx.oncomplete = () => { db.close(); resolve(); };
+        delTx.onerror = () => reject(delTx.error);
+      } else {
+        db.close();
+        resolve();
+      }
+    };
     tx.onerror = () => reject(tx.error);
   });
 }
