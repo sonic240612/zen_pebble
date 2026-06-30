@@ -46,11 +46,8 @@ export function HUD() {
 
   return (
     <div className="hud">
-      <div className="hud-timer">
-        <span className="hud-clock">{clock}</span>
-        <span className="hud-timer-sep">|</span>
-        <span>{formatDurationShort(elapsed)}</span>
-      </div>
+      <div className="hud-clock">{clock}</div>
+      <div className="hud-timer">{formatDurationShort(elapsed)}</div>
       <div className="hud-info">
         <span className={`hud-stage ${transitioning ? 'hud-stage-transition' : ''}`}>
           {currentStage.name}

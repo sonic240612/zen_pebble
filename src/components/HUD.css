@@ -19,21 +19,16 @@
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   font-variant-numeric: tabular-nums;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
 }
 
 .hud-clock {
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 300;
-  opacity: 0.6;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 0.15rem;
 }
 
-.hud-timer-sep {
-  font-size: 1rem;
-  opacity: 0.25;
-}
 
 .hud-info {
   display: flex;
