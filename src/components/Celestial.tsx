@@ -1,26 +1,29 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import {
-  SphereGeometry, MeshStandardMaterial, Color, AdditiveBlending,
-  PointsMaterial, BufferGeometry, Float32BufferAttribute, Points,
-  type Mesh,
+  SphereGeometry, MeshStandardMaterial, MeshBasicMaterial, Color, AdditiveBlending,
+  PointsMaterial, BufferGeometry, Float32BufferAttribute, Points, type Mesh,
 } from 'three';
 import { useGameStore } from '../stores/gameStore';
-import { STAGES } from '../data/stages';
 
 const CYCLE = 48 * 60 * 60 * 1000;
 
 function SunMoon() {
   const sunRef = useRef<Mesh>(null);
+  const sunGlowRef = useRef<Mesh>(null);
   const moonRef = useRef<Mesh>(null);
-  const [sunGeo, sunMat] = useMemo(() => [
-    new SphereGeometry(0.06, 16, 16),
-    new MeshStandardMaterial({ color: '#ffdd88', emissive: '#ffaa44', emissiveIntensity: 2 }),
-  ], []);
-  const [moonGeo, moonMat] = useMemo(() => [
-    new SphereGeometry(0.04, 12, 12),
-    new MeshStandardMaterial({ color: '#ddeeff', emissive: '#8899bb', emissiveIntensity: 0.3, roughness: 0.8 }),
-  ], []);
+  const moonGlowRef = useRef<Mesh>(null);
+
+  const { sunGeo, sunGlowGeo, sunMat, sunGlowMat, moonGeo, moonGlowGeo, moonMat, moonGlowMat } = useMemo(() => ({
+    sunGeo: new SphereGeometry(0.12, 16, 16),
+    sunGlowGeo: new SphereGeometry(0.35, 16, 16),
+    sunMat: new MeshStandardMaterial({ color: '#ffdd66', emissive: '#ff8800', emissiveIntensity: 3 }),
+    sunGlowMat: new MeshBasicMaterial({ color: '#ffaa44', transparent: true, opacity: 0.2, blending: AdditiveBlending, depthWrite: false }),
+    moonGeo: new SphereGeometry(0.08, 12, 12),
+    moonGlowGeo: new SphereGeometry(0.22, 12, 12),
+    moonMat: new MeshStandardMaterial({ color: '#ddeeff', emissive: '#99aacc', emissiveIntensity: 0.5, roughness: 0.8 }),
+    moonGlowMat: new MeshBasicMaterial({ color: '#aabbdd', transparent: true, opacity: 0.12, blending: AdditiveBlending, depthWrite: false }),
+  }), []);
 
   useFrame(() => {
     const state = useGameStore.getState();
@@ -29,32 +32,38 @@ function SunMoon() {
     const weather = state.envSeed.weather;
 
     const sunAngle = (elapsed % CYCLE) / CYCLE * Math.PI * 2;
-    const sunX = Math.cos(sunAngle) * 5;
-    const sunY = Math.sin(sunAngle) * 5 + 1;
+    const sunX = Math.cos(sunAngle) * 6;
+    const sunY = Math.sin(sunAngle) * 4 + 1.5;
     const sunZ = Math.sin(sunAngle * 0.7) * 3;
 
     const isNight = stageId >= 6;
-    const isCloudy = weather === 'cloudy' || weather === 'rainy' || weather === 'foggy';
+    const isCovered = weather === 'cloudy' || weather === 'rainy' || weather === 'foggy';
 
-    if (sunRef.current) {
-      sunRef.current.position.set(sunX, sunY, sunZ);
-      const visible = sunY > -0.5 && !isCloudy;
-      sunRef.current.visible = visible;
-    }
+    const sunVisible = !isNight && !isCovered && sunY > -0.3;
+    if (sunRef.current) sunRef.current.visible = sunVisible;
+    if (sunGlowRef.current) sunGlowRef.current.visible = sunVisible;
 
-    if (moonRef.current) {
-      const moonAngle = sunAngle + Math.PI;
-      const moonX = Math.cos(moonAngle) * 4;
-      const moonY = Math.sin(moonAngle) * 3 + 0.5;
-      const moonZ = Math.sin(moonAngle * 0.7) * 2.5;
-      moonRef.current.position.set(moonX, moonY, moonZ);
-      moonRef.current.visible = isNight && !isCloudy;
-    }
+    if (sunRef.current) sunRef.current.position.set(sunX, sunY, sunZ);
+    if (sunGlowRef.current) sunGlowRef.current.position.set(sunX, sunY, sunZ);
+
+    const moonAngle = sunAngle + Math.PI;
+    const moonX = Math.cos(moonAngle) * 5;
+    const moonY = Math.sin(moonAngle) * 3 + 1;
+    const moonZ = Math.sin(moonAngle * 0.7) * 2.5;
+
+    const moonVisible = isNight && !isCovered;
+    if (moonRef.current) moonRef.current.visible = moonVisible;
+    if (moonGlowRef.current) moonGlowRef.current.visible = moonVisible;
+
+    if (moonRef.current) moonRef.current.position.set(moonX, moonY, moonZ);
+    if (moonGlowRef.current) moonGlowRef.current.position.set(moonX, moonY, moonZ);
   });
 
   return (
     <>
+      <mesh ref={sunGlowRef} geometry={sunGlowGeo} material={sunGlowMat} />
       <mesh ref={sunRef} geometry={sunGeo} material={sunMat} />
+      <mesh ref={moonGlowRef} geometry={moonGlowGeo} material={moonGlowMat} />
       <mesh ref={moonRef} geometry={moonGeo} material={moonMat} />
     </>
   );
@@ -64,7 +73,7 @@ function Stars() {
   const ref = useRef<Points>(null);
 
   const { geometry, material } = useMemo(() => {
-    const count = 600;
+    const count = 1200;
     const geo = new BufferGeometry();
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
@@ -72,11 +81,11 @@ function Stars() {
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const r = 30 + Math.random() * 40;
+      const r = 20 + Math.random() * 50;
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = Math.abs(r * Math.cos(phi));
+      positions[i * 3 + 1] = Math.abs(r * Math.cos(phi)) * 0.6 + 5;
       positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-      sizes[i] = 0.02 + Math.random() * 0.04;
+      sizes[i] = 0.02 + Math.random() * 0.06;
     }
 
     geo.setAttribute('position', new Float32BufferAttribute(positions, 3));
@@ -84,7 +93,7 @@ function Stars() {
 
     const mat = new PointsMaterial({
       color: new Color('#ffffff'),
-      size: 0.03,
+      size: 0.04,
       transparent: true,
       opacity: 0.8,
       blending: AdditiveBlending,
@@ -98,7 +107,8 @@ function Stars() {
   useFrame(() => {
     const stageId = useGameStore.getState().stage;
     const isNight = stageId >= 6;
-    material.opacity += (isNight ? 0.8 : 0) - material.opacity * 0.02;
+    const targetOpacity = isNight ? 0.9 : 0;
+    material.opacity += (targetOpacity - material.opacity) * 0.02;
   });
 
   return <primitive object={new Points(geometry, material)} ref={ref} />;

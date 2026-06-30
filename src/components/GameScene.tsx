@@ -7,6 +7,7 @@ import { Ground } from './Ground';
 import { EnvironmentFX } from './EnvironmentFX';
 import { Landscape } from './Landscape';
 import { Celestial } from './Celestial';
+import { Mountains } from './Mountains';
 
 function SceneFog() {
   const weather = useGameStore((s) => s.envSeed.weather);
@@ -24,6 +25,7 @@ function Scene() {
 
       <Sky />
       <Ground />
+      <Mountains />
       <EnvironmentFX />
       <Landscape />
       <Celestial />
