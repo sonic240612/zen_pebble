@@ -5,24 +5,28 @@ import { useGameStore } from '../stores/gameStore';
 import { STAGES } from '../data/stages';
 import { applySeasonTint } from '../data/seasonColors';
 
-type MountainLayer = { z: number; colorBase: string; opacity: number; heightMult: number };
+type MountainLayer = { z: number; colorBase: string; opacity: number; heightMult: number; seed: number };
 
 const LAYERS: MountainLayer[] = [
-  { z: -6, colorBase: '#8a9aa8', opacity: 0.25, heightMult: 0.7 },
-  { z: -3.5, colorBase: '#6a7a88', opacity: 0.35, heightMult: 0.85 },
-  { z: -2, colorBase: '#4a5a68', opacity: 0.55, heightMult: 1.0 },
+  { z: -1.5, colorBase: '#8a9aa8', opacity: 0.3, heightMult: 0.65, seed: 1 },
+  { z: -0.8, colorBase: '#6a7a88', opacity: 0.5, heightMult: 0.8, seed: 2 },
+  { z: -0.3, colorBase: '#4a5a68', opacity: 0.95, heightMult: 1.0, seed: 3 },
 ];
 
-function createMountainGeometry(peaks: number): ShapeGeometry {
+function createMountainGeometry(peaks: number, seed: number): ShapeGeometry {
+  const rng = (i: number) => {
+    const n = Math.sin(seed * 1000 + i * 37.1) * 43758.5453;
+    return n - Math.floor(n);
+  };
   const shape = new Shape();
-  const startX = -5;
-  shape.moveTo(startX, -1);
+  const halfW = 7;
+  shape.moveTo(-halfW, -1.5);
   for (let i = 0; i <= peaks; i++) {
-    const x = startX + (10 / peaks) * i;
-    const y = 0.15 + Math.random() * 0.55;
+    const x = -halfW + (halfW * 2 / peaks) * i;
+    const y = 0.4 + rng(i) * 1.1;
     shape.lineTo(x, y);
   }
-  shape.lineTo(5, -1);
+  shape.lineTo(halfW, -1.5);
   shape.closePath();
   return new ShapeGeometry(shape);
 }
@@ -30,7 +34,7 @@ function createMountainGeometry(peaks: number): ShapeGeometry {
 function MountainLayer({ layer }: { layer: MountainLayer }) {
   const meshRef = useRef<Mesh>(null);
 
-  const geometry = useMemo(() => createMountainGeometry(12), []);
+  const geometry = useMemo(() => createMountainGeometry(14, layer.seed), [layer.seed]);
 
   useFrame(() => {
     if (!meshRef.current) return;
@@ -43,7 +47,8 @@ function MountainLayer({ layer }: { layer: MountainLayer }) {
 
     const mat = meshRef.current.material as MeshStandardMaterial;
     mat.color.lerp(new Color(seasonTinted), 0.02);
-    mat.opacity += (layer.opacity * currentStage.ambientIntensity * 1.5 - mat.opacity) * 0.01;
+    const targetOpacity = layer.opacity * Math.max(0.4, currentStage.ambientIntensity * 1.8);
+    mat.opacity += (targetOpacity - mat.opacity) * 0.01;
   });
 
   return (
@@ -60,7 +65,6 @@ function MountainLayer({ layer }: { layer: MountainLayer }) {
         side={DoubleSide}
         roughness={1}
         metalness={0}
-        depthWrite={false}
       />
     </mesh>
   );

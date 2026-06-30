@@ -9,7 +9,7 @@ import { createDirtTexture } from '../utils/textures';
 export function Ground() {
   const meshRef = useRef<Mesh>(null);
 
-  const geometry = useMemo(() => new PlaneGeometry(20, 20), []);
+  const geometry = useMemo(() => new PlaneGeometry(10, 5), []);
 
   const material = useMemo(() => {
     const mat = new MeshStandardMaterial({
